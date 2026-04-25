@@ -35,7 +35,7 @@ public class BoardNativeRepository {
         query.setParameter(3, username);
 
         query.executeUpdate();
-    }
+    } // end of save
 
     // 게시글 목록 조회
     public List<Board> findAll() {
@@ -46,13 +46,57 @@ public class BoardNativeRepository {
         // while(rs.next) {Board board = new Board();
         // board.settitle(rs.getString("title")))}
 
-        Query query = em.createNativeQuery(sql,Board.class);
+        Query query = em.createNativeQuery(sql, Board.class);
 
         // while(rs.next){
         // rs....
         // } - 이제 필요없음
         return query.getResultList(); // 다중행으로 받아준다.
-    }
+    } // end of findAll
 
+    // 게시글 상세보기
+    public Board findById(Integer id) {
+        String strQuery = """
+                select * from board_tb where id = ?
+                """;
 
-}
+        try {
+            Query query = em.createNativeQuery(strQuery, Board.class);
+            query.setParameter(1, id);
+            return (Board) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    } // end of findById
+
+    // 게시글 삭제 하기
+    @Transactional
+    public void deleteById(Integer id) {
+        Query query = em.createNativeQuery("delete from board_tb where id = ?");
+        query.setParameter(1, id);
+        query.executeUpdate();
+    } // end of deleteById
+
+    // 게시글 수정하기
+    @Transactional
+    public boolean updateById(String username, String title, String content, Integer id) {
+
+        String sql = """
+                update board_tb set username = ?, title = ?, content = ? where id = ?
+                """;
+
+        Query query = em.createNativeQuery(sql);
+        query.setParameter(1, username);
+        query.setParameter(2, title);
+        query.setParameter(3, content);
+        query.setParameter(4, id);
+
+        int rows = query.executeUpdate();
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } // end of updateById
+
+} // end of class
