@@ -1,12 +1,13 @@
-package com.tenco.blog.controller;
+package com.tenco.blog.board;
 
-import com.tenco.blog.model.Board;
-import com.tenco.blog.repository.BoardNativeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class BoardController {
 
     // DI처리
     private final BoardNativeRepository boardNativeRepository;
-
+    private final BoardPersistRepository boardPersistRepository;
 
     /**
      * 게시글 작성 화면 요청
@@ -43,17 +44,11 @@ public class BoardController {
 
     //자원의 생성 ,기능의 요청 - 백그라운드에서 동작하는가?
     @PostMapping("/board/save")// - 알아서 구분 가능함
-    public String saveProc(
-            @RequestParam("username") String username,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content) {
+    public String saveProc(BoardRequest.SaveDTO saveDTO){
+        // 이제 따로 작성해서 대입할 필요없이 saveDTO를 통해 만들어둔 객체를
+        // 이용해서 저장이 가능하다.
+        boardPersistRepository.save(saveDTO.toEntity());
 
-        log.info("username: " + username);
-        log.info("title : " + title);
-        log.info("content : " + content);
-
-        // insert + 트랜잭션 처리
-        boardNativeRepository.save(title, content, username);
         // redirect : 다시 URL 요청 해!
         // return "redirect:/";
         return "redirect:/";
@@ -105,7 +100,7 @@ public class BoardController {
         model.addAttribute("board", board);
 
         return "board/update-form";
-    }
+    } // end of updateFormPage
 
     // 게시글 수정
     @PostMapping("/board/{id}/update")
@@ -123,8 +118,8 @@ public class BoardController {
 
         // 게시글 수정 완료 --> 게시글 목록, 게시글 상세보기 화면
         // 리다이렉트는 뷰 리졸브 동작이 아닌 (내부 파일을 찾는게 아니라는 의미)
-        // 그냥 개로운 HTTP Get 요청이다.
+        // 그냥 새로운 HTTP Get 요청이다.
         return "redirect:/board/" + id;
-    }
+    } // end of updateProc
 
 }
