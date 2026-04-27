@@ -64,7 +64,8 @@ public class BoardController {
     @GetMapping({"/", "index"})
     public String list(Model model) {
 
-        List<Board> boardList = boardNativeRepository.findAll();
+        //List<Board> boardList = boardNativeRepository.findAll();
+        List<Board> boardList = boardPersistRepository.findAll();
         model.addAttribute("boardList", boardList);
 
         return "board/list";

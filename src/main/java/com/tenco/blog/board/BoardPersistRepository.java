@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository // Ioc -  메모리에 올라감(제어 역전이기 때문에)
 @RequiredArgsConstructor // DI 처리 시킴 - 어떤 역할?
 
@@ -26,7 +28,7 @@ public class BoardPersistRepository {
 
     // 게시글 저장
     @Transactional
-    public Board save(Board board){
+    public Board save(Board board) {
         // 1. 매개 변수로 받은 board는 비영속상태
         // 영속상태란 - 아직 영속성 컨텍스트에 관리 되지 않고 있는 상태
         // 아직 데이터베이스와 연관없는 순수 java 객체일 뿐
@@ -43,5 +45,18 @@ public class BoardPersistRepository {
 
         // 1차 캐쉬에 들어간 이제 영속상태로 변경된 object 리턴한다.
         return board;
-    }
+    } // end of save
+
+    //게시글 목록 조회(JPQL를 사용해서)
+    public List<Board> findAll() {
+        // JPQL : Entity 객체를 대상으로 하는 객체지향 쿼리
+        // Board는 Entity 클래스 명 , b는 별칭
+        // 주의! 테이블 명이 아닌 클래스명(Entity) 사용
+        String jpql = """
+                SELECT b FROM Board b ORDER BY b.createdAt DESC
+                """;
+        List<Board> boardList = em.createQuery(jpql, Board.class).getResultList(); // 다중 행으로 떨어지기 떄문
+        return boardList;
+
+    } // end of findAll
 }
