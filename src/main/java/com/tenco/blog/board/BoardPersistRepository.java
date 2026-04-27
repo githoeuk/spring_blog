@@ -71,12 +71,12 @@ public class BoardPersistRepository {
         String jpql = """
                 SELECT b FROM Board b WHERE b.id = :id
                 """;
-//      " ? " 대신해서 변수명을 할 수 있도록 해줌
+        //" ? " 대신해서 변수명을 할 수 있도록 해줌
 
         return em.createQuery(jpql, Board.class)
                 .setParameter("id", id)
                 .getSingleResult();
-    }
+    } // end of findById
 
     // 게시글 삭제
     @Transactional
@@ -91,7 +91,38 @@ public class BoardPersistRepository {
 
         // 조회가 되었다면 삭제할 데이터를 넣어주면 된다
         em.remove(board); //remove를 사용하기 위해서는 조건이 필요함
-    }
+    } // end of deleteById
+
+    @Transactional
+    public void updateById(Integer id, BoardRequest.UpdateDTO updateDTO) {
+        // 수정 시 주의사항
+        // 조회를 먼저 해야한다.
+        Board boardEntity = em.find(Board.class,id);
+        // em.find() 호출 후 리턴 받은 board는 영속 상태이다.
+
+        if (boardEntity == null){
+            throw new IllegalArgumentException("수정할 게시글을 찾을 수 없습니다." + id);
+        }
+
+//        // 엔티티 -> 테이블과 매핑되는 object는 updateDTO가 없음
+//        // 우리가 관리하고자 하는 엔티티는 Board이다.
+//        // em.persist(board); -> pk값인 id가 없기때문에 새로운 게시물로 생성되어 버린다..
+//        // 그렇기에 boardEntity에 조회된 값들에다가 덮어쓰기를 통해 업데이트를 진행한다.
+//        boardEntity.setUsername(board.getUsername());
+//        boardEntity.setTitle(board.getTitle());
+//        boardEntity.setContent(board.getContent());
+
+        boardEntity.update(updateDTO); // 상태 변경
+
+        // 변경 감지(dirty checking) 동작 됨.
+        // 영속 컨텍스트에 관리 되어지는 객체(엔티티) 안에 조회 했을 때 기준으로 1차 캐쉬에 저장되어 짐
+        // 추후  1차 캐쉬에 들어가 있는 객체의 (엔티티)의 변수값이 변경되었다면 자동으로 감지한다.
+        //em.persist(boardEntity); -> 자동으로 변경되기에 사용할 필요가 없다.
 
 
-}
+
+        // 앞으로 수정 기능을 만들어 줄때 더티 체킹 동작으로 사용하자.
+
+    } // end of updateById
+
+} // end of class

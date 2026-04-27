@@ -4,6 +4,7 @@
         <div class="card-header"><b>글수정 화면입니다</b></div>
         <div class="card-body">
             <!--  익명 게시글 작성    -->
+            {{! action테그는 "post"로 "주소를 던져라" 라는 의미이다}}
             <form action="/board/{{id}}/update" method="post">
                 <div class="mb-3">
                     <input type="text" name="username" class="form-control"

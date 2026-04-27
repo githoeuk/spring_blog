@@ -31,6 +31,9 @@ public class Board {
     private String title;
     private String content;
 
+
+    // 기능 추가
+
     // 어노테이션 추가
     // @CreationTimestamp : 하이버네이트가 제공하는 어노테이션
     // 특정 하나의 엔티티가 저장이 될 때 현재 시간을 자동으로 저장해 주는 기능
@@ -43,6 +46,21 @@ public class Board {
     public String getTIme(){
         // TODO 수정
         return createdAt.toString();
-    }
+    } // end of getTIme
+
+    // 수정 편의 기능 추가
+    public void update(BoardRequest.UpdateDTO updateDTO){
+        this.title =  updateDTO.getTitle();
+        this.username = updateDTO.getUsername();
+        this.content = updateDTO.getContent();
+
+        // 변경 감지 동작 과정 - 더티 체킹
+        // 1. 최초 조회 시 영속성 컨텍스트 1차 캐쉬에 데이터를 스냅샷으로 보관
+        // 2. 영속화 된 엔티티가(board)의 멤버 변수값이 변경이 된다면
+        // - 1차에서 보관했던 값과 2차에서 수정된 필드값을 비교 한다.
+        // 3. 변화가 감지되면 트랜잭션 커밋 시점에 변경된 필드값 update쿼리를 자동 생성
+        // 4. 물리적인 DB에 반영 됨.
+    } // end of update
+
 
 }
