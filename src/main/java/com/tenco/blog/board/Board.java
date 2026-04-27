@@ -39,4 +39,10 @@ public class Board {
     @CreationTimestamp
     private Timestamp createdAt;
 
+    // createAt -> 포멧하는 메서드 만들어보기
+    public String getTIme(){
+        // TODO 수정
+        return createdAt.toString();
+    }
+
 }
