@@ -78,5 +78,20 @@ public class BoardPersistRepository {
                 .getSingleResult();
     }
 
+    // 게시글 삭제
+    @Transactional
+    public void deleteById(Integer id) {
+        // 1.삭제하기 위해선 엔티티를 조회해야함
+        Board board = em.find(Board.class, id);
+        // 1.1 ㄴ조회가 되었기 때문에 board는 영속화가 된 상태이다.
+
+        if (board == null) {
+            throw new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다." + id);
+        }
+
+        // 조회가 되었다면 삭제할 데이터를 넣어주면 된다
+        em.remove(board); //remove를 사용하기 위해서는 조건이 필요함
+    }
+
 
 }
