@@ -21,7 +21,7 @@ public class BoardRequest {
         public Board toEntity() {
             //
             return Board.builder()
-                    .username(username)
+                    //.username(username)
                     .title(title)
                     .content(content)
                     .build();

@@ -76,11 +76,18 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detailPage(@PathVariable(name = "id") Integer id, Model model) {
         // 유효성 검사 , 인증 검사
-        //Board board = boardNativeRepository.findById(id);
         Board board = boardPersistRepository.findById(id);
+        // board는 연관 관계가 User엔티티와 ManyToOne 관계 설정이 되어 잇다.
+        // 직접 쿼리 구문을 작성하지 않을 때 즉,
+        // 엔티티매니저의 메서드로 객체를 조회 시
+        // 자동으로 JOIN 구문을 호출해준다.
+        // 단 Fetch전략에 따라 EAGER , LAZY 전략에따라
+        // 한번에 다 조인해서 가져오거나 (EAGER)
+        // 필요할 때 한번 더 요청할 수 있다 (LAZY)
+        // 코드상에서 User에 정보를 요구 - lazy전략 시
+        // System.out.println(board.getUser().getUsername());
 
         model.addAttribute("board", board);
-
         return "board/detail";
     } // end of detailPage
 

@@ -1,5 +1,6 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,9 +28,23 @@ public class Board {
     // IDENTITY 전략 : 데이터베이스 기본 auto_increment 기능 사용
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String username;
+    // private String username;
     private String title;
     private String content;
+
+    // 연관관계 설정 해주어야 한다.
+    // 1 : 1 or 1 : N
+    // board,user   -- N(board) : 1 (user) 관계
+
+    // ManyToOne = N : 1 설정시 사용 여러개 게시글이 하나의 사용자에게 상속한다.
+    // Fetch 전략 : EAGER , LAZY
+    // EAGER - 조회시 한번에 전부 들고와라(1번 게시글 조회 시 조인까지 해라)
+    // LAZY - 처음부터 board 조회할 때 User 정보를 가져오지 마. 필요할 때 한번 더 조회 해.
+    @ManyToOne(fetch = FetchType.LAZY)
+    // OneToMany ,  OneToOne , ManyToOne
+    @JoinColumn(name = "user_id") //  외래키 컬럼명 표시
+    private User user;
+
 
 
     // 기능 추가
@@ -50,8 +65,9 @@ public class Board {
 
     // 수정 편의 기능 추가
     public void update(BoardRequest.UpdateDTO updateDTO){
+
         this.title =  updateDTO.getTitle();
-        this.username = updateDTO.getUsername();
+        //this.username = updateDTO.getUsername();
         this.content = updateDTO.getContent();
 
         // 변경 감지 동작 과정 - 더티 체킹

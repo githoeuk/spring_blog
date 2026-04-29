@@ -65,17 +65,18 @@ public class BoardPersistRepository {
 
         // 영속성 컨텍스를 사용하기 위해
         // 1. 엔티티 매니저에서 제공하는 메서드를 활용하는 방법
-        // Board board = em.find(Board.class,id);
+        Board board = em.find(Board.class, id);
 
         // 2. JPQL 문법으로 Board를 조회하는 방법
-        String jpql = """
-                SELECT b FROM Board b WHERE b.id = :id
-                """;
+//        String jpql = """
+//                SELECT b FROM Board b WHERE b.id = :id
+//                """;
         //" ? " 대신해서 변수명을 할 수 있도록 해줌
 
-        return em.createQuery(jpql, Board.class)
-                .setParameter("id", id)
-                .getSingleResult();
+//        return em.createQuery(jpql, Board.class)
+//                .setParameter("id", id)
+//                .getSingleResult();
+        return board;
     } // end of findById
 
     // 게시글 삭제
@@ -97,10 +98,10 @@ public class BoardPersistRepository {
     public void updateById(Integer id, BoardRequest.UpdateDTO updateDTO) {
         // 수정 시 주의사항
         // 조회를 먼저 해야한다.
-        Board boardEntity = em.find(Board.class,id);
+        Board boardEntity = em.find(Board.class, id);
         // em.find() 호출 후 리턴 받은 board는 영속 상태이다.
 
-        if (boardEntity == null){
+        if (boardEntity == null) {
             throw new IllegalArgumentException("수정할 게시글을 찾을 수 없습니다." + id);
         }
 
@@ -118,7 +119,6 @@ public class BoardPersistRepository {
         // 영속 컨텍스트에 관리 되어지는 객체(엔티티) 안에 조회 했을 때 기준으로 1차 캐쉬에 저장되어 짐
         // 추후  1차 캐쉬에 들어가 있는 객체의 (엔티티)의 변수값이 변경되었다면 자동으로 감지한다.
         //em.persist(boardEntity); -> 자동으로 변경되기에 사용할 필요가 없다.
-
 
 
         // 앞으로 수정 기능을 만들어 줄때 더티 체킹 동작으로 사용하자.
