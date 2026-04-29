@@ -1,6 +1,7 @@
 package com.tenco.blog.board;
 
 import com.tenco.blog.user.User;
+import com.tenco.blog.util.MyDataUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +47,6 @@ public class Board {
     private User user;
 
 
-
     // 기능 추가
 
     // 어노테이션 추가
@@ -57,16 +57,15 @@ public class Board {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    // createAt -> 포멧하는 메서드 만들어보기
-    public String getTIme(){
-        // TODO 수정
-        return createdAt.toString();
-    } // end of getTIme
+    // createdAt -> 포멧 하는 메서드 만들어 보기
+    public String getTime() {
+        return MyDataUtil.timestampFormat(createdAt);
+    }// end of getTIme
 
     // 수정 편의 기능 추가
-    public void update(BoardRequest.UpdateDTO updateDTO){
+    public void update(BoardRequest.UpdateDTO updateDTO) {
 
-        this.title =  updateDTO.getTitle();
+        this.title = updateDTO.getTitle();
         //this.username = updateDTO.getUsername();
         this.content = updateDTO.getContent();
 

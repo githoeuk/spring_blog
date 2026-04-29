@@ -63,11 +63,8 @@ public class BoardController {
 
     @GetMapping({"/", "index"})
     public String list(Model model) {
-
-        //List<Board> boardList = boardNativeRepository.findAll();
         List<Board> boardList = boardPersistRepository.findAll();
         model.addAttribute("boardList", boardList);
-
         return "board/list";
     } // end of list
 
@@ -123,8 +120,7 @@ public class BoardController {
         updateDTO.validate();
 
         // 2, DAO 계층으로 전달
-        boardPersistRepository.updateById(id,updateDTO);
-
+        boardPersistRepository.updateById(id, updateDTO);
 
 
         return "redirect:/board/" + id;
