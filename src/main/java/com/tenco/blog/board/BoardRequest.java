@@ -37,11 +37,11 @@ public class BoardRequest {
 
         // 게시글 수정 시 유효성 검사 편의 메서드
         public void validate() {
-            if (username.trim().isEmpty()) {
+            if (username == null || username.trim().isEmpty()) {
                 throw new IllegalArgumentException("유저이름을 입력해주세요");
-            } else if (title.trim().isEmpty()) {
+            } else if (title == null || title.trim().isEmpty()) {
                 throw new IllegalArgumentException("제목을 입력해주세요");
-            } else if (content.length() < 3) {
+            } else if (content == null || content.length() < 3) {
                 throw new IllegalArgumentException("내용은 3글자 이상 작성해야 합니다.");
             }
         } // end of validate
