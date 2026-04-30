@@ -1,6 +1,6 @@
 package com.tenco.blog.board;
 
-import com.tenco.blog._core.errors.*;
+import com.tenco.blog._core.errors.Exception403;
 import com.tenco.blog.user.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -125,7 +124,7 @@ public class BoardController {
             Board board = boardPersistRepository.findById(id);
             if (board.getUser().getId() == sessionUser.getId()) {
                 boardPersistRepository.deleteById(id);
-            }else{
+            } else {
                 throw new Exception403("삭제 권한이 없습니다.");
             }
         } catch (Exception e) {
