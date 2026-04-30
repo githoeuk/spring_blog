@@ -29,21 +29,9 @@ public class BoardPersistRepository {
     // 게시글 저장
     @Transactional
     public Board save(Board board) {
-        // 1. 매개 변수로 받은 board는 비영속상태
-        // 영속상태란 - 아직 영속성 컨텍스트에 관리 되지 않고 있는 상태
-        // 아직 데이터베이스와 연관없는 순수 java 객체일 뿐
 
-        //em.createNativeQuery() -- 대신 사용할 문법
         em.persist(board); // insert 처리 완료
-        // 2. 내부 상태
-        // 이 board 객체를 영속성 컨텍스트에 넣어 둠(SQL 저장소에등록)
-        // 영속성 컨텍스트에 들어가더라도 아직 DB에 실제 insert한 상태는 아님
 
-        // 3. 트랜잭션 커밋 시점에 실제 DB에 접근해서 insert 구문이 수행된다.
-
-        // 4. board 객체의 id 변수값을 1차 캐쉬에 map 구조로 보관 되어짐.
-
-        // 1차 캐쉬에 들어간 이제 영속상태로 변경된 object 리턴한다.
         return board;
     } // end of save
 
@@ -53,7 +41,12 @@ public class BoardPersistRepository {
         // Board는 Entity 클래스 명 , b는 별칭
         // 주의! 테이블 명이 아닌 클래스명(Entity) 사용
 
-        String jpqlStr = "SELECT b FROM Board b ORDER BY b.id DESC";
+
+        // JOIN FETCH 사용 쿼리 변경
+        // : Board와 연관된 데이터를 JOIN으로 한번에 가져오는 문법
+        // N + 1 문제를 해결하는 정밀 제어
+
+        String jpqlStr = "SELECT b FROM Board b JOIN FETCH b.user ORDER BY b.id DESC";
         List<Board> boardList = em.createQuery(jpqlStr, Board.class).getResultList();
 
         return boardList;
@@ -86,34 +79,18 @@ public class BoardPersistRepository {
     } // end of deleteById
 
     @Transactional
-    public void updateById(Integer id, BoardRequest.UpdateDTO updateDTO) {
+    public Board updateById(Integer id, BoardRequest.UpdateDTO updateDTO) {
         // 수정 시 주의사항
         // 조회를 먼저 해야한다.
         Board boardEntity = em.find(Board.class, id);
-        // em.find() 호출 후 리턴 받은 board는 영속 상태이다.
 
         if (boardEntity == null) {
             throw new IllegalArgumentException("수정할 게시글을 찾을 수 없습니다." + id);
         }
 
-//        // 엔티티 -> 테이블과 매핑되는 object는 updateDTO가 없음
-//        // 우리가 관리하고자 하는 엔티티는 Board이다.
-//        // em.persist(board); -> pk값인 id가 없기때문에 새로운 게시물로 생성되어 버린다..
-//        // 그렇기에 boardEntity에 조회된 값들에다가 덮어쓰기를 통해 업데이트를 진행한다.
-//        boardEntity.setUsername(board.getUsername());
-//        boardEntity.setTitle(board.getTitle());
-//        boardEntity.setContent(board.getContent());
-
+        //Dirty checking
         boardEntity.update(updateDTO); // 상태 변경
-
-        // 변경 감지(dirty checking) 동작 됨.
-        // 영속 컨텍스트에 관리 되어지는 객체(엔티티) 안에 조회 했을 때 기준으로 1차 캐쉬에 저장되어 짐
-        // 추후  1차 캐쉬에 들어가 있는 객체의 (엔티티)의 변수값이 변경되었다면 자동으로 감지한다.
-        //em.persist(boardEntity); -> 자동으로 변경되기에 사용할 필요가 없다.
-
-
-        // 앞으로 수정 기능을 만들어 줄때 더티 체킹 동작으로 사용하자.
-
+        return boardEntity;
     } // end of updateById
 
 } // end of class

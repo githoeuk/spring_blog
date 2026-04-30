@@ -15,6 +15,17 @@ public class UserRepository {
     // @Autowired // DI - 스프링 프레임 워크가 주소값 자동 주입
     private final EntityManager em;
 
+    // 회원 조회 기능
+    public User findById (Integer id){
+       // 조회
+        User user = em.find(User.class,id);
+        if (user == null){
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+       return user;
+
+    } // end of findById
+
     // 회원 가입 요청 시 -> INSERT 기능 요구
     @Transactional //트랜잭션 처리
     public User save(User user) {
@@ -59,13 +70,12 @@ public class UserRepository {
 
     } // end of findByUserNameAndPassword
 
+    @Transactional
+    public User updateById(Integer id, UserRequest.UpdateDTO updateDTO) {
 
-    // 테스트 코드
-    public static void main(String[] args) {
+        User userEntity = findById(id); // 코드 재활용 , 영속성 컨텍스트에 관리됨
+        userEntity.setPassword(updateDTO.getPassword()); // 객체의 상태값 변경
 
-        //UserRepository userRepository = new UserRepository();
-
+        return userEntity;
     }
-
-
 } // end of class

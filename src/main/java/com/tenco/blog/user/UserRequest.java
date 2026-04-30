@@ -60,7 +60,23 @@ public class UserRequest {
 
     } // end of JoinDTO
 
+    @Data
+    // 프로필 수정 시 받을 DTO
+    public static class UpdateDTO{
+        private String password;
 
+        public void validate(){
+
+            if (password == null || password.isBlank()){
+                throw new IllegalArgumentException("비밀번호는 필수 입니다.");
+            }
+            if (password.length() < 3){
+                throw new IllegalArgumentException("비밀번호는 4자 이상이어야 합니다.");
+            }
+
+
+        }
+    } // end of updateDTO
 
 
 } // end of class

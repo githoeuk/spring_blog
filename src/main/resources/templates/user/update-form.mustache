@@ -1,29 +1,24 @@
-<!--<h1> 수정 페이지 테스트 </h1>-->
-<!--{{> layout/header}}-->
+{{>layout/header}}
 
-<!--<div class="container p-5 flex-grow-1">-->
-<!--    <div class="card">-->
-<!--        <div class="card-header"><b>글수정 화면입니다</b></div>-->
-<!--        <div class="card-body">-->
-<!--            &lt;!&ndash;  익명 게시글 작성    &ndash;&gt;-->
-<!--            <form action="/board/save" method="post">-->
-<!--                <div class="mb-3">-->
-<!--                    <input type="text" name="username" class="form-control"-->
-<!--                           placeholder="enter username" value="{{board.username}}">-->
-<!--                </div>-->
-<!--                <div class="mb-3">-->
-<!--                    <input type="text" name="title" class="form-control"-->
-<!--                           placeholder="enter title" value="{{board.title}}">-->
-<!--                </div>-->
-<!--                <div class="mb-3">-->
-<!--                    <textarea type="text" name="content" rows="5" class="form-control" placeholder="enter title">-->
-<!--                        {{board.content}}-->
-<!--                    </textarea>-->
-<!--                </div>-->
-<!--                <button class="btn btn-primary">글수정 완료</button>-->
-<!--            </form>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="container p-5 flex-grow-1">
+    <div class="card">
+        <div class="card-header"><b>회원 수정을 해주세요</b></div>
+        <div class="card-body">
+            <form action="/user/update" method="post">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="username" value="{{user.username}}" disabled>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="password" value="{{user.password}}">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="email" value="{{user.email}}" disabled>
+                </div>
+                <button class="btn btn-primary form-control">회원 정보 수정</button>
+            </form>
 
-<!--{{> layout/footer}}-->
+        </div>
+    </div>
+</div>
+
+{{>layout/footer}}

@@ -19,15 +19,15 @@ spring:
 
   #데이터베이스 연결 설정 (MYSQL)
   datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/myblog?serverTimezone=Asia/Seoul
-#    username: root
-#    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/myblog?serverTimezone=Asia/Seoul
+    username: root
+    password: root
 
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test
-    username: sa
-    password:
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
   h2:
     console:
       enabled: true
@@ -35,6 +35,7 @@ spring:
 #    초기 데이터 설정
   sql:
     init:
+      mode: always # 외부 DB(MySQL)에서도 실행되도록 설정
       data-locations:
         - classpath:db/data.sql
 #        #classpath - resources 디렉토리의 위치의 축약 버전
@@ -44,12 +45,15 @@ spring:
     hibernate:
       #ddl = create -> 애플리케이션 시작 시 테이블을 새로 생성
       # 기존 데이터는 모두 삭제됨(개발용)
-      ddl-auto: create
+      ddl-auto: update
     #sql 쿼리를 콘솔에 출력(개발용)
     show-sql: true
     properties:
       hibernate:
         #sql 쿼리를 보기 좋게 포맷팅 해준다.
         format_sql: true
+        # N + 1 문제를 완화 하기위한 완충 장치 설정
+        # 기본 where 절에서 in 절(in 쿼리로 변경해준다)
+        default_batch_fetch_size: 10
     #data.sql파일을 hibernate 초기화 이후에 실행
     defer-datasource-initialization: true
