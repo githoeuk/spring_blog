@@ -22,9 +22,7 @@ public class UserController {
     @PostMapping("/user/update")
     public String updateProc(UserRequest.UpdateDTO updateDTO, HttpSession session){
         User sessionUser = (User) session.getAttribute("sessionUser");
-        if (sessionUser == null){
-            return "Redirect:/login-form";
-        }
+
         try {
             // 유효성 검사
             updateDTO.validate();
@@ -50,9 +48,6 @@ public class UserController {
 
         // 인증 검사
         User sessionUser = (User) session.getAttribute("sessionUser");
-        if (sessionUser == null) {
-            return "redirect:/login-form";
-        }
 
         User userEntity = userRepository.findById(sessionUser.getId());
         userEntity.setPassword("");
@@ -89,10 +84,6 @@ public class UserController {
         // 로그인 내용을 세션 메모리에 저장함
         httpSession.setAttribute("sessionUser", sessionUser);
 
-        System.out.println("로그인 성공");
-        System.out.println("로그인 사용자 : " + sessionUser.getUsername());
-        System.out.println("로그인 이메일 : " + sessionUser.getEmail());
-
         return "redirect:/";
     } // end of loginProc
 
@@ -121,10 +112,6 @@ public class UserController {
     @PostMapping("/join")
     public String joinProc(UserRequest.JoinDTO joinDTO) {
 
-        log.info("username " + joinDTO.getUsername());
-        log.info("password " + joinDTO.getPassword());
-        log.info("email " + joinDTO.getEmail());
-
         // 유효성 검사 하기 --> 문제 발생 시 -> 예외 처리됨
         joinDTO.validate();
 
@@ -134,10 +121,9 @@ public class UserController {
             throw new IllegalArgumentException("이미 사용중인 유저네임입니다. " + userCheckName.getUsername());
         }
 
-
         userRepository.save(joinDTO.toEntity());
 
-        // 로그인 화면으로 리다이렉션 처리 예정 TODO
-        return "redirect:/";
+        // 로그인 화면으로 리다이렉션 처리 예정
+        return "redirect:/login-form";
     } // end of joinProc
 }
