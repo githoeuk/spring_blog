@@ -1,5 +1,6 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog._core.errors.Exception403;
 import com.tenco.blog.user.User;
 import com.tenco.blog.util.MyDataUtil;
 import jakarta.persistence.*;
@@ -60,7 +61,7 @@ public class Board {
     // createdAt -> 포멧 하는 메서드 만들어 보기
     public String getTime() {
         return MyDataUtil.timestampFormat(createdAt);
-    }// end of getTIme
+    }
 
     // 수정 편의 기능 추가
     public void update(BoardRequest.UpdateDTO updateDTO) {
@@ -77,5 +78,12 @@ public class Board {
         // 4. 물리적인 DB에 반영 됨.
     } // end of update
 
+    // 편의 기능 - 게시글 소유자 확인을 위한 기능 추가 - 인가 처리
+    public boolean isOwner(Integer sessionUserId){
+     if (!this.user.getId().equals(sessionUserId)){
+         throw new Exception403("본인이 작성한 게시글이 아닙니다.");
+     }
+     return true;
+    } // isOwner
 
 } // end of class

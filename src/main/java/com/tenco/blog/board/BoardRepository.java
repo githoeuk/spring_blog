@@ -40,7 +40,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     // (단 한번에 작성자 정보도 조회 - 추가 기능(JpaRepository에는 없는 기능))
     // n+1 문제 해결
     @Query("""
-            SELECT b FROM Board b join FETCH b.user ORDER BY b.id DESC 
+            SELECT b FROM Board b JOIN FETCH b.user ORDER BY b.id DESC
             """)
     List<Board> findAllJoinUser();
     // BoardPersisRepository의 findByAll - JpaRepository 버전

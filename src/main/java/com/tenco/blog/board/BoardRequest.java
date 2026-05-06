@@ -58,4 +58,4 @@ public class BoardRequest {
     } // end of UpdateDTO
 
 
-}
+} // end of class

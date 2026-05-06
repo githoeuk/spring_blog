@@ -1,6 +1,5 @@
 package com.tenco.blog.board;
 
-import com.tenco.blog._core.errors.Exception403;
 import com.tenco.blog.user.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +18,7 @@ import java.util.List;
 
 public class BoardController {
 
-    // DI처리
-    private final BoardPersistRepository boardPersistRepository;
+    private final BoardService boardService;
 
     /**
      * 게시글 작성 화면 요청
@@ -31,7 +29,7 @@ public class BoardController {
     // 자원의 요청 , 화면의 요청
     @GetMapping("/board/save-form")
     public String saveForm(HttpSession httpSession) {
-        // 1. 인즘 검사 -> LoginInterceptor에서 처리 중
+        // 1. 인증 검사 -> LoginInterceptor에서 처리 중
         return "board/save-form";
     }
 
@@ -47,30 +45,16 @@ public class BoardController {
     //자원의 생성 ,기능의 요청 - 백그라운드에서 동작하는가?
     @PostMapping("/board/save")// - 알아서 구분 가능함
     public String saveProc(BoardRequest.SaveDTO saveDTO, HttpSession session) {
+        // 1. 인증 검사 - 인터셉터 처리됨
 
-        log.info("===게시글 저장 요청====");
-        // 이 요청 사용자가 로그인을했다면 로그인 정보를 세션 메모리에서 가져오면된다.
-        // 1. 세션에서 로그인한 사용자 정보 가져오기
-        // HttpSession으로 저장한 변수 호출 - 가져오기
+        // 3. save기능 요청(service단에 요청)
         User sessionUser = (User) session.getAttribute("sessionUser");
+        // 2. 유효성 검사
+        saveDTO.validate();
 
-        try {
-            //3. 로그인 된 사용자
-            //3.1 유효성 검사
-            saveDTO.validate();
-
-            Board board = saveDTO.toEntity(sessionUser);
-            boardPersistRepository.save(board);
-
-            // redirect : 다시 URL 요청 해!
-            // return "redirect:/";
-            return "redirect:/";
-        } catch (Exception e) {
-            System.out.println("에러 발생 : " + e.getMessage());
-            return "board/save-form";
-        }
-
-
+        boardService.save(saveDTO,sessionUser);
+        // 화면에 반환
+        return "Redirect/";
     } // end of saveProc
 
     /**
@@ -82,9 +66,8 @@ public class BoardController {
     // 게시글 목록 보기
     @GetMapping({"/", "index"})
     public String list(Model model) {
-
-        List<Board> boardList = boardPersistRepository.findAll();
-        model.addAttribute("boardList", boardList);
+        List<Board> boardList = boardService.findAll();
+        model.addAttribute("boardList", boardList); // 가방에 담아서 넘겨주기
         return "board/list";
     } // end of list
 
@@ -92,18 +75,8 @@ public class BoardController {
     // http://localhost:8080/board/1
     @GetMapping("/board/{id}")
     public String detailPage(@PathVariable(name = "id") Integer id, Model model) {
-        // 유효성 검사 , 인증 검사
-        Board board = boardPersistRepository.findById(id);
-        // board는 연관 관계가 User엔티티와 ManyToOne 관계 설정이 되어 잇다.
-        // 직접 쿼리 구문을 작성하지 않을 때 즉,
-        // 엔티티매니저의 메서드로 객체를 조회 시
-        // 자동으로 JOIN 구문을 호출해준다.
-        // 단 Fetch전략에 따라 EAGER , LAZY 전략에따라
-        // 한번에 다 조인해서 가져오거나 (EAGER)
-        // 필요할 때 한번 더 요청할 수 있다 (LAZY)
-        // 코드상에서 User에 정보를 요구 - lazy전략 시
-        // System.out.println(board.getUser().getUsername());
 
+        Board board = boardService.findById(id);
         model.addAttribute("board", board);
         return "board/detail";
     } // end of detailPage
@@ -114,24 +87,13 @@ public class BoardController {
     // 3. 인가처리 후  삭제 진행
     @PostMapping("/board/{id}/delete")
     public String deleteProc(@PathVariable(name = "id") Integer id, HttpSession session) {
-        //boardNativeRepository.deleteById(id);
 
-        log.info("=== 게시글 삭제 요청 ===");
-        //인증검사
+        //인증검사 - 로그인 인터셉터가 처리
+
+        // service단에 삭제 요청
         User sessionUser = (User) session.getAttribute("sessionUser");
-        try {
-            // 삭제할 게시글 조회 (권한 체크 = 인가 처리)
-            Board board = boardPersistRepository.findById(id);
-            if (board.getUser().getId() == sessionUser.getId()) {
-                boardPersistRepository.deleteById(id);
-            } else {
-                throw new Exception403("삭제 권한이 없습니다.");
-            }
-        } catch (Exception e) {
-            throw new Exception403("삭제 권한이 없습니다.");
-        }
+        boardService.deleteById(id,sessionUser); // 권한,인증 검사함
 
-        // PRG 패턴 (Post -> Redirect -> Get) 적용
         return "redirect:/";
     } // end of deleteProc
 
@@ -140,45 +102,26 @@ public class BoardController {
     @GetMapping("/board/{id}/update-form")
     public String updateFormPage(@PathVariable(name = "id") Integer id, Model model, HttpSession session) {
 
-        // 인증 처리
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        // 인증 처리 - 역시나 로그인 인터셉터에서 처리
 
-        // 인가 처리
-        // 조회 기능 - 게시글 id로
-        Board board = boardPersistRepository.findById(id);
-        if (sessionUser.getId() != board.getUser().getId()) {
-            throw new Exception403("수정 권한이 없습니다.");
-        }
-
-        model.addAttribute("board", board);
+        Board boardEntity = boardService.findById(id);
+        model.addAttribute("board", boardEntity);
 
         return "board/update-form";
     } // end of updateFormPage
 
     // 게시글 수정
     @PostMapping("/board/{id}/update")
-    // 메세지 컨버터 객체가 동작해서 자도으로 객체를 생성하고 값을 매핑해준다.(뷰 리졸브느낌)
     public String updateProc(@PathVariable(name = "id") Integer id, BoardRequest.UpdateDTO updateDTO
             , HttpSession session) {
         //@PathVariable - 경로 변수를 가져올 수 있다.
 
-        // 인증 검사
+        // 인증 검사 - 로그인 인터셉터가 처리한다.
         User sessionUser = (User) session.getAttribute("sessionUser");
-
-        try {
-            // 유효성 검사
-            updateDTO.validate();
-            // 인가 처리
-            Board board = boardPersistRepository.findById(id);
-            if (sessionUser.getId() != board.getUser().getId()) {
-                throw new RuntimeException("수정할 권한이 없습니다.");
-            }
-            // 2, DAO 계층으로 전달
-            boardPersistRepository.updateById(id, updateDTO);
-
-        } catch (Exception e) {
-            return "redirect:/board/" + id + "/update-form";
-        }
+        // 유효성 검사
+        updateDTO.validate();
+        // 서비스단에 수정 요청
+        boardService.updateById(id,updateDTO,sessionUser);
 
         return "redirect:/board/" + id;
     } // end of updateProc
