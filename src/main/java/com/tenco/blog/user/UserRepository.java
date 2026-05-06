@@ -27,14 +27,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // 사용자명으로 사용자 조회 (중복 체크 확인 용)
     @Query("""
-          SELECT u FROM User u WHERE u.username = :username""")
-    Optional<User> findByUsername();
+          SELECT u FROM User u WHERE u.username = :username
+                    """)
+    Optional<User> findByUsername(@Param("username") String username);
     // 데이터 반환타입이 Optional<User>
 
 
     // 사용자명과 비밀번호로 사용자 조회(로그인용)
     @Query("""
-            SELECT u FROM User u WHERE u.username = :username AND u.password = :password""")
+            SELECT u FROM User u WHERE u.username = :username AND u.password = :password
+                        """)
     Optional<User> FindByUsernameAndPassword(@Param("username") String username,
                                              @Param("password") String password);
     //@Param -  쿼리문의 입력값을 바인딩할떄 사용

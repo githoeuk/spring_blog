@@ -8,7 +8,7 @@ public class UserRequest {
     @Data
     @NoArgsConstructor
     // 로그인 시 받을 데이터 DTO클래스 설계
-    public static class loginDTO{
+    public static class LoginDTO{
         private String username;
         private String password;
 

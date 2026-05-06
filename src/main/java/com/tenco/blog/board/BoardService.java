@@ -1,8 +1,12 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog._core.errors.Exception400;
 import com.tenco.blog._core.errors.Exception403;
 import com.tenco.blog._core.errors.Exception404;
 import com.tenco.blog.user.User;
+import com.tenco.blog.user.UserRepository;
+import com.tenco.blog.user.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -178,6 +182,30 @@ public class BoardService {
         log.info("게시글 삭제 완료 - ID {}",id);
 
     } // end of deleteById
+
+    /**
+     * 게시글 수정 화면 요청 (인가 처리)
+     * @param id (Board PK)
+     * @param sessionUser (로그인한 사용자 정보)
+     * @return BoardEntity
+     */
+    public Board findByIdAndCheckOwner(Integer id, User sessionUser) {
+
+        // 1
+        log.info("게시글 수정 화면 조회 서비스");
+
+        // 2
+        Board boardEntity = findById(id);
+        boardEntity.isOwner(sessionUser.getId());
+        // 4
+        log.info("게시글 수정 조회 완료 - 제목 : {} , 작성자 ; {} ",
+                boardEntity.getTitle(),boardEntity.getUser().getUsername());
+
+        // 5
+        return boardEntity;
+    } // end of findById
+
+
 
 
 } // end of class
