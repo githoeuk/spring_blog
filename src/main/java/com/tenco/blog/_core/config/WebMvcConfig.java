@@ -28,4 +28,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // /board/{id:\d+} -> /board/7 처럼 정수값이 들어오면 제외 시킨다.
                 .excludePathPatterns("/board/{id:\\d+}");
     } // end of addInterceptors
-}
+} // end of class

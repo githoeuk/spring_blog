@@ -74,7 +74,6 @@ public class UserRequest {
                 throw new IllegalArgumentException("비밀번호는 4자 이상이어야 합니다.");
             }
 
-
         }
     } // end of updateDTO
 

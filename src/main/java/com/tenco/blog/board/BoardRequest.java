@@ -36,7 +36,6 @@ public class BoardRequest {
                 throw new IllegalArgumentException("내용은 3글자 이상 작성해야 합니다.");
             }
         } // end of validate
-
     } // end of SaveDTO
 
     // 내부 정적 클래스 게시글 수정 DTO 설계
@@ -56,7 +55,6 @@ public class BoardRequest {
                 throw new IllegalArgumentException("내용은 3글자 이상 작성해야 합니다.");
             }
         } // end of validate
-
     } // end of UpdateDTO
 
 

@@ -6,16 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller // IOC 대상
 @RequiredArgsConstructor // DI 처리
 public class UserController {
 
-    private final UserRepository userRepository; // DI
+    private final UserPersistRepository userRepository; // DI
     private final HttpSession httpSession; // session 메모리에 할당
 
     // 프로필 기능 요청
@@ -58,10 +56,8 @@ public class UserController {
         return "/user/update-form";
     } // end of updateFormPage
 
-
     // 로그인 화면 요청
     // 주소 설계 : http://localhost:8080/login-form
-
     @GetMapping("/login-form")
     public String loginFormPage() {
         return "user/login-form";
@@ -80,7 +76,6 @@ public class UserController {
             throw new IllegalArgumentException("사용자명 또는 비밀번호가 잘못되었습니다.");
         }
 
-        // 여기까지 코드가 도달한다면 우리 DB에 정상 사용자임을 논리적으로 확인 됨.
         // 로그인 내용을 세션 메모리에 저장함
         httpSession.setAttribute("sessionUser", sessionUser);
 
@@ -126,4 +121,5 @@ public class UserController {
         // 로그인 화면으로 리다이렉션 처리 예정
         return "redirect:/login-form";
     } // end of joinProc
-}
+
+} // end of class
