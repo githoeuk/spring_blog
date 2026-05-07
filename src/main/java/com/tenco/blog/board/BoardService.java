@@ -104,7 +104,7 @@ public class BoardService {
         log.info("게시글 상세 화면 및 인가 확인");
 
         BoardResponse.DetailDTO detailDTO = 게시글상세조회(id);
-        if (detailDTO.getUserId().equals(sessionUser.getId())) {
+        if (!detailDTO.getUserId().equals(sessionUser.getId())) {
             throw new Exception403("권한없음");
         }
 

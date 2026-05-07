@@ -18,27 +18,24 @@ public class UserController {
     // 프로필 수정 요청
     @PostMapping("/user/update")
     public String updateProc(UserRequest.UpdateDTO updateDTO, HttpSession session) {
-        // 인증 검사 처리 - LoginInterceptor 에서 처리
-        // 유효성 검사
-        updateDTO.validate();
-        // 수정 기능
-        User sessionUser = (User) session.getAttribute("sessionUser");
-        User userEntity = userService.updateById(sessionUser.getId(), updateDTO);
-        // 세션 동기화 처리
-        session.setAttribute("sessionUser", userEntity);
 
+        updateDTO.validate();
+
+        UserResponse.SessionDTO sessionUser = (UserResponse.SessionDTO) session.getAttribute("sessionUser");
+
+        userService.회원정보수정(sessionUser.getId(), updateDTO,session);
         return "redirect:/";
     } // end of updateProc
 
     // 프로필 화면 요청
     @GetMapping("/user/update-form")
     public String updateFormPage(HttpSession session, Model model) {
-        // session -> 로그인 정보가 담겨있음
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        // session -> 로그인 정보가 담겨있음 - 가져와서 확인
+        UserResponse.SessionDTO sessionUser = (UserResponse.SessionDTO) session.getAttribute("sessionUser");
         // 인증 검사
-        User userEntity = userService.findById(sessionUser.getId());
+        UserResponse.SessionDTO sessionDTO = userService.회원정보수정화면(sessionUser.getId());
         // 모아서 전달
-        model.addAttribute("user", userEntity);
+        model.addAttribute("user", sessionDTO);
 
         return "/user/update-form";
     } // end of updateFormPage
@@ -54,15 +51,15 @@ public class UserController {
 
     // 로그인 기능 요청
     @PostMapping("/login")
-    public String loginProc(UserRequest.LoginDTO loginDTO,HttpSession session) {
+    public String loginProc(UserRequest.LoginDTO reqloginDTO,HttpSession session) {
         // 인증 검사 x , 유효성 검사 o
 
         // 유효성 검사
-        loginDTO.validate();
+        reqloginDTO.validate();
         // 로그인 기능 요청
-        User userEntity = userService.login(loginDTO);
-        //
-        session.setAttribute("sessionUser",userEntity);
+        UserResponse.SessionDTO sessionDTO = userService.로그인(reqloginDTO);
+        // 세션 메모리에 저장
+        session.setAttribute("sessionUser",sessionDTO);
 
         return "redirect:/";
     } // end of loginProc
@@ -92,7 +89,7 @@ public class UserController {
         joinDTO.validate();
 
         // 회원가입 기능 요청
-        userService.join(joinDTO);
+        userService.회원가입(joinDTO);
 
         // 로그인 화면으로 리다이렉션 처리 예정
         return "redirect:/login-form";

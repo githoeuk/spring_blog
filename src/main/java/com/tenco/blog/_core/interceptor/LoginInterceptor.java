@@ -2,6 +2,7 @@ package com.tenco.blog._core.interceptor;
 
 import com.tenco.blog._core.errors.Exception401;
 import com.tenco.blog.user.User;
+import com.tenco.blog.user.UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -20,9 +21,9 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 인증 검사
         HttpSession session = request.getSession();
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        UserResponse.SessionDTO sessionUser = (UserResponse.SessionDTO) session.getAttribute("sessionUser");
         if (sessionUser == null){
-            throw new Exception401("로그인을 필요합 서비스입니다.");
+            throw new Exception401("로그인이 필요한 서비스입니다.");
         }
         return true; // controller로 진행
     } // end of preHandle
