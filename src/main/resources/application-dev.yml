@@ -42,6 +42,11 @@ spring:
 
 #  jpa : 인터페이스로 이루어져 있는 ORM이다.
   jpa:
+    # Open Session in view -> false 설정
+    # true (기본 값) -> 뷰 렌더링까지 DB 세션 유지 됨(LAZY 로딩 가능)
+    # false : 트랜잭션 종료 시 DB 세션 종료 (즉 Controller,View - LAZY 로딩 불가)
+    # false 사용 시 Service 필요한 데이터를 모두 조회하고 응답 시 DTO 설계 방식으로 처리
+    open-in-view: false #기본값은 true이다
     hibernate:
       #ddl = create -> 애플리케이션 시작 시 테이블을 새로 생성
       # 기존 데이터는 모두 삭제됨(개발용)

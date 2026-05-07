@@ -52,9 +52,9 @@ public class BoardController {
         // 2. 유효성 검사
         saveDTO.validate();
 
-        boardService.save(saveDTO,sessionUser);
+        boardService.게시글작성(saveDTO,sessionUser);
         // 화면에 반환
-        return "Redirect/";
+        return "redirect:/";
     } // end of saveProc
 
     /**
@@ -66,7 +66,10 @@ public class BoardController {
     // 게시글 목록 보기
     @GetMapping({"/", "index"})
     public String list(Model model) {
-        List<Board> boardList = boardService.findAll();
+        List<BoardResponse.ListDTO> boardList = boardService.게시글목록();
+        // OSIV 개념을 false로 설정했기 때문에 여기서 LAZY 요청을 하면 터져버린다.
+        // boardList.get(0).getUser().getUsername();
+
         model.addAttribute("boardList", boardList); // 가방에 담아서 넘겨주기
         return "board/list";
     } // end of list
@@ -76,8 +79,8 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detailPage(@PathVariable(name = "id") Integer id, Model model) {
 
-        Board board = boardService.findById(id);
-        model.addAttribute("board", board);
+        BoardResponse.DetailDTO detailDTO = boardService.게시글상세조회(id);
+        model.addAttribute("board", detailDTO);
         return "board/detail";
     } // end of detailPage
 
@@ -92,7 +95,7 @@ public class BoardController {
 
         // service단에 삭제 요청
         User sessionUser = (User) session.getAttribute("sessionUser");
-        boardService.deleteById(id,sessionUser); // 권한,인증 검사함
+        boardService.게시글삭제(id,sessionUser); // 권한,인증 검사함
 
         return "redirect:/";
     } // end of deleteProc
@@ -102,30 +105,21 @@ public class BoardController {
     @GetMapping("/board/{id}/update-form")
     public String updateFormPage(@PathVariable(name = "id") Integer id, Model model, HttpSession session) {
 
-        // 인증 처리 - 역시나 로그인 인터셉터에서 처리
         User sessionUser = (User)session.getAttribute("sessionUser");
-
-        // findById는 상세보기 화면 요청 누구나 요청이 가능하다.
-        // 즉 인가처리가 안되고 있음
-        //Board boardEntity = boardService.findById(id);
-        Board boardEntity = boardService.findByIdAndCheckOwner(id,sessionUser);
-        model.addAttribute("board", boardEntity);
-
+        BoardResponse.DetailDTO detailDTO = boardService.게시글상세화면및인가처리(id,sessionUser);
+        model.addAttribute("board", detailDTO);
         return "board/update-form";
+
     } // end of updateFormPage
 
     // 게시글 수정
     @PostMapping("/board/{id}/update")
     public String updateProc(@PathVariable(name = "id") Integer id, BoardRequest.UpdateDTO updateDTO
             , HttpSession session) {
-        //@PathVariable - 경로 변수를 가져올 수 있다.
 
-        // 인증 검사 - 로그인 인터셉터가 처리한다.
         User sessionUser = (User) session.getAttribute("sessionUser");
-        // 유효성 검사
         updateDTO.validate();
-        // 서비스단에 수정 요청
-        boardService.updateById(id,updateDTO,sessionUser);
+        boardService.게시글수정(id,updateDTO,sessionUser);
 
         return "redirect:/board/" + id;
     } // end of updateProc
