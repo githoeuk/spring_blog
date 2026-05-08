@@ -28,17 +28,17 @@ public class LoginInterceptor implements HandlerInterceptor {
         return true; // controller로 진행
     } // end of preHandle
 
-    // 뷰가 렌더링 되기 전에 낚아채는 방식 - 뷰 리졸브가 파일찾을때 막는 방식
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
-    } // end of postHandle
-
-    // 요청 처리가 완료된 후, 즉 뷰가 완전 렌더링이 된 후 호출
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
-    } // end of afterCompletion
+//    // 뷰가 렌더링 되기 전에 낚아채는 방식 - 뷰 리졸브가 파일찾을때 막는 방식
+//    @Override
+//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+//        HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+//    } // end of postHandle
+//
+//    // 요청 처리가 완료된 후, 즉 뷰가 완전 렌더링이 된 후 호출
+//    @Override
+//    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+//        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+//    } // end of afterCompletion
 
 
 } // end of class
