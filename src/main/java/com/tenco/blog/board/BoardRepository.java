@@ -49,4 +49,5 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     // 더티 체킹 - 1차 캐쉬에 없다면 조회 후 저장
     // -> 근데 1차 캐쉬에 있는 내용이 변경되었다면 동기화 처리해줌
 
+
 } // end of class

@@ -2,6 +2,7 @@ package com.tenco.blog.board;
 
 import com.tenco.blog._core.errors.Exception403;
 import com.tenco.blog._core.errors.Exception404;
+import com.tenco.blog.reply.ReplyRepository;
 import com.tenco.blog.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
 
     /*
         게시글 목록 조회
@@ -151,6 +153,11 @@ public class BoardService {
                 () -> new Exception404("해당 게시물을 찾을 수 없습니다.")
         );
         boardEntity.isOwner(sessionUser.getId());
+        
+        // 기존에 작성된 댓글부터 전체 삭제
+        // 게시글 삭제 요청 시  해당 게시글의 관련된 댓글 삭제는 -
+        replyRepository.deleteByBoardId(boardEntity.getId());
+        
         boardRepository.deleteById(id);
         log.info("게시글 삭제 완료 - ID {}", id);
 
