@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller // IoC
 @RequiredArgsConstructor
@@ -36,7 +33,17 @@ public class ReplyController {
     } // end of saveProc
 
     // 댓글 삭제 기능 요청
+    @PostMapping("/reply/{id}/delete")
+    public String deleteProc(@PathVariable(name = "id") Integer replyId,
+                             HttpSession session,
+                             @RequestParam(name = "boardId")Integer boardId){
 
+        // 1. 인증 검사(인터셉터처리)
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        replyService.댓글삭제(replyId,sessionUser.getId());
+
+        return "redirect:/board/"+boardId;
+    } // end of deleteProc
     // mission? 댓글 수정 기능 요청
 
 }

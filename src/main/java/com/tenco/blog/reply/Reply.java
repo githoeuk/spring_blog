@@ -57,7 +57,7 @@ public class Reply {
      */
     public boolean isOwner(Integer userId) {
         if ( this.user == null || userId == null){
-            throw new Exception404("잘못된 요청입니다.");
+           return false;
         }
         if ( this.user.getId() != userId){
             return false;

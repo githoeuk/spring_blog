@@ -3,6 +3,7 @@ package com.tenco.blog._core.errors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -104,4 +105,25 @@ public class GlobalExceptionHandler {
         return "err/500";
     } // end of ex500
 
+
+    // 데이터베이스 관련 및 제약 조건 위반 오류 처리
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException e,
+                                                        HttpServletRequest request){
+        log.warn("=== 데이터 베이스 제약 조건 위반 오류 발생 ===");
+        log.warn("요청 URL : {}", request.getRequestURL());
+        log.warn("에러 메세지 : {} ", e.getMessage());
+
+        String errorMessage = e.getMessage();
+        // 실제로는 다른 문구를 작성해야 함
+        if (errorMessage != null && errorMessage.contains("FOREIGN KEY")){
+            // 캐스케이드 변경
+            request.setAttribute("msg", "관련된데이터가 있어 삭제할 수 없습니다.");
+        }else{
+            request.setAttribute("msg", "데이터베이스 제약 조건 위반 : " + e.getMessage());
+        }
+
+        request.setAttribute("msg", "시스템 오류가 발생했습니다. 관리자에게 문의해주세요");
+        return "err/500";
+    }
 } // end of class

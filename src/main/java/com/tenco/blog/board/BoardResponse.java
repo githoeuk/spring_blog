@@ -47,17 +47,31 @@ public class BoardResponse {
         private String content;
         private String username;
         private Integer userId; // User PK - 추후 사용
+        private boolean isOwner;
 
         public DetailDTO(Board board){
             this.id = board.getId();
             this.title = board.getTitle();
             this.content = board.getContent();
-            // 연관 관계 설정 시 - ballpointException 발생할 가능성이 있기때문에 방어적 코드로 작성해줘야 한다.
+            // 연관 관계 설정 시 - Null-pointException 발생할 가능성이 있기때문에 방어적 코드로 작성해줘야 한다.
             if (board.getUser() != null) {
                 this.username = board.getUser().getUsername();
                 this.userId = board.getUser().getId();
             }
         }
+
+        // 소유자 확인
+        public boolean checkIsOwner(Integer sessionUserId){
+            if (sessionUserId == null){
+                return false;
+            }
+            if (sessionUserId.equals(this.userId)){
+                return true;
+            }else {
+                return false;
+            }
+        }
+
     } // end of detailDTO
 
 

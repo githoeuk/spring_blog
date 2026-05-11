@@ -1,5 +1,8 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog.reply.Reply;
+import com.tenco.blog.reply.ReplyResponse;
+import com.tenco.blog.reply.ReplyService;
 import com.tenco.blog.user.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ReplyService replyService; // 댓글 목록 기능
 
     /**
      * 게시글 작성 화면 요청
@@ -78,13 +82,24 @@ public class BoardController {
     // 게시글 상세보기 화면 요청
     // http://localhost:8080/board/1
     @GetMapping("/board/{id}")
-    public String detailPage(@PathVariable(name = "id") Integer id, Model model) {
+    public String detailPage(@PathVariable(name = "id") Integer id
+            , HttpSession session
+            , Model model) {
 
         BoardResponse.DetailDTO detailDTO = boardService.게시글상세조회(id);
 
-        // 댓글 목록 조회 기능 필요 - TODO
+        // 댓글 목록 조회 기능 필요
+        // 로그인 하지 않은 사용자도 볼 수 있음
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        Integer sessionUserId = sessionUser != null ? sessionUser.getId() : null;
 
+        List<ReplyResponse.ListDTO> replyList = replyService.댓글목록조회(id,sessionUserId);
+
+        // view에 데이터 전달
         model.addAttribute("board", detailDTO);
+        model.addAttribute("checkIsOwner",detailDTO.checkIsOwner(sessionUserId));
+        model.addAttribute("replyList", replyList);
+
         return "board/detail";
     } // end of detailPage
 
