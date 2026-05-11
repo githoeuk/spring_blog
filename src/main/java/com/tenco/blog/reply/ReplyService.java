@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,18 +33,8 @@ public class ReplyService {
         // DTO로 변환 방법 (리스트라서) 
         // for , stream api, 메서드 참조
 
-//      방법 1 - for
-//        List<ReplyResponse.ListDTO> listDTOList = new ArrayList<>();
-//        for (int i = 0; i < replyList.size(); i++) {
-//            Reply tempReply = replyList.get(i);
-//            // 객세 생성을 위해 필요한 데이터
-//            ReplyResponse.ListDTO listDTO = new ReplyResponse.ListDTO(tempReply,sessionUserId);
-//            listDTOList.add(listDTO);
-//        }
-
-
         return replyList.stream()
-                .map(reply -> new ReplyResponse.ListDTO(reply,sessionUserId))
+                .map(reply -> new ReplyResponse.ListDTO(reply, sessionUserId))
                 .toList();
     } // end of 댓글목록조회(list)
 
@@ -70,13 +59,13 @@ public class ReplyService {
     } // end of saveByComment
 
     @Transactional
-    public void 댓글삭제(Integer replyId, Integer sessionUserId){
+    public void 댓글삭제(Integer replyId, Integer sessionUserId) {
 
         Reply replyEntity = replyRepository.findById(replyId).orElseThrow(() -> {
             return new Exception404("해당 댓글을 찾을 수 없습니다.");
         });
         // 인가 처리
-        if (replyEntity.getUser().getId() != sessionUserId){
+        if (replyEntity.getUser().getId() != sessionUserId) {
             throw new Exception403("댓글 삭제 권한이 없습니다.");
         }
         replyRepository.delete(replyEntity);

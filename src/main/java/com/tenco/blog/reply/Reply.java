@@ -1,6 +1,5 @@
 package com.tenco.blog.reply;
 
-import com.tenco.blog._core.errors.Exception404;
 import com.tenco.blog.board.Board;
 import com.tenco.blog.user.User;
 import jakarta.persistence.*;
@@ -9,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @Data
@@ -56,10 +54,10 @@ public class Reply {
      * @return
      */
     public boolean isOwner(Integer userId) {
-        if ( this.user == null || userId == null){
-           return false;
+        if (this.user == null || userId == null) {
+            return false;
         }
-        if ( this.user.getId() != userId){
+        if (this.user.getId() != userId) {
             return false;
         }
         return true;

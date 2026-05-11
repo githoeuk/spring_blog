@@ -3,8 +3,6 @@ package com.tenco.blog.reply;
 import com.tenco.blog.util.MyDataUtil;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 public class ReplyResponse {
 
 

@@ -4,13 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 //@Repository - 부모 클래스에 정의 되어 있음
-public interface ReplyRepository extends JpaRepository<Reply, Integer>
-{
+public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
     // 자동으로 만들어주는 기능들 - 인수는 PK값의 데이터형을 참조해서 만들어준다.
     // 1. 등록 및 수정 save(Board entity)
@@ -42,18 +40,18 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer>
     List<Reply> findByBoardIdWithUser(@Param("boardId") Integer boardId);
 
     /**
-     *  이전 수정 또는 삭제 기능에서는 수정은 더티 체킹 처리,
-     *  삭제는 기본적으로 제공하는 em.remove() 메서드를 사용해서 처리했었다.
-     *  지금은 직접 JQPL 쿼리를 선언해서 DELETE 처리하는 구문이라 다른 상황이다.
+     * 이전 수정 또는 삭제 기능에서는 수정은 더티 체킹 처리,
+     * 삭제는 기본적으로 제공하는 em.remove() 메서드를 사용해서 처리했었다.
+     * 지금은 직접 JQPL 쿼리를 선언해서 DELETE 처리하는 구문이라 다른 상황이다.
+     *
+     * @param boardId
      * @Query(...) <- JPA가 기본적으로 SELECT 쿼리로만 인식한다
      * insert,update,delete 는 jpa에게 select 쿼리가 아니라는것을 명시해줘야 한다.
      * 그 어노테이션이 @Modifying 이다
-     * @param boardId
      */
     @Modifying
     @Query("""
             DELETE FROM Reply r WHERE r.board.id = :boardId
             """)
-
-    void deleteByBoardId(@Param("boardId")Integer boardId);
+    void deleteByBoardId(@Param("boardId") Integer boardId);
 } // end of class
