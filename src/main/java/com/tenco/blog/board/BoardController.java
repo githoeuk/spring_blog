@@ -81,6 +81,9 @@ public class BoardController {
     public String detailPage(@PathVariable(name = "id") Integer id, Model model) {
 
         BoardResponse.DetailDTO detailDTO = boardService.게시글상세조회(id);
+
+        // 댓글 목록 조회 기능 필요 - TODO
+
         model.addAttribute("board", detailDTO);
         return "board/detail";
     } // end of detailPage

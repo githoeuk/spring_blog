@@ -1,5 +1,6 @@
 package com.tenco.blog.user;
 
+import com.tenco.blog._core.errors.Exception401;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -17,13 +17,15 @@ public class UserController {
 
     // 프로필 수정 요청
     @PostMapping("/user/update")
-    public String updateProc(UserRequest.UpdateDTO updateDTO, HttpSession session) {
+    public String updateProc(UserRequest.UpdateDTO updateDTO,
+                             HttpSession session) {
 
         updateDTO.validate();
 
-        UserResponse.SessionDTO sessionUser = (UserResponse.SessionDTO) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute("sessionUser");
 
-        userService.회원정보수정(sessionUser.getId(), updateDTO,session);
+        User updateUser = userService.회원정보수정(sessionUser.getId(), updateDTO);
+        session.setAttribute("sessionUser", updateUser);
         return "redirect:/";
     } // end of updateProc
 
@@ -31,11 +33,11 @@ public class UserController {
     @GetMapping("/user/update-form")
     public String updateFormPage(HttpSession session, Model model) {
         // session -> 로그인 정보가 담겨있음 - 가져와서 확인
-        UserResponse.SessionDTO sessionUser = (UserResponse.SessionDTO) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute("sessionUser");
         // 인증 검사
-        UserResponse.SessionDTO sessionDTO = userService.회원정보수정화면(sessionUser.getId());
+        User user = userService.회원정보수정화면(sessionUser.getId());
         // 모아서 전달
-        model.addAttribute("user", sessionDTO);
+        model.addAttribute("user", user);
 
         return "/user/update-form";
     } // end of updateFormPage
@@ -51,15 +53,15 @@ public class UserController {
 
     // 로그인 기능 요청
     @PostMapping("/login")
-    public String loginProc(UserRequest.LoginDTO reqloginDTO,HttpSession session) {
+    public String loginProc(UserRequest.LoginDTO reqloginDTO, HttpSession session) {
         // 인증 검사 x , 유효성 검사 o
 
         // 유효성 검사
         reqloginDTO.validate();
         // 로그인 기능 요청
-        UserResponse.SessionDTO sessionDTO = userService.로그인(reqloginDTO);
+        User user = userService.로그인(reqloginDTO);
         // 세션 메모리에 저장
-        session.setAttribute("sessionUser",sessionDTO);
+        session.setAttribute("sessionUser", user);
 
         return "redirect:/";
     } // end of loginProc

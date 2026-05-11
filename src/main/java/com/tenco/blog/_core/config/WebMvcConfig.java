@@ -33,7 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 여기에다가 LoginInterceptor 등록 예정 - 인증 처리 인터셉터 동작 함
         registry.addInterceptor(loginInterceptor)
                 // 로그인 관련 (인증이 필요한 페이지)
-                .addPathPatterns("/board/**", "/user/**")
+                .addPathPatterns("/board/**", "/user/**", "/reply/**")
                 .excludePathPatterns(
                         // 로그인 관련 (인증이 필요없는 페이지)
                         "/login-form",   // 로그인 화면 요청 시

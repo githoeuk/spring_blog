@@ -35,7 +35,7 @@ public class UserService {
      * @return User ( 저장된 사용자 정보)
      */
     @Transactional //  쓰기 처리
-    public UserResponse.JoinDTO 회원가입(UserRequest.JoinDTO joinDTO) {
+    public User 회원가입(UserRequest.JoinDTO joinDTO) {
 
         log.info("회원 가입 서비스 시작");
         userRepository.findByUsername(joinDTO.getUsername()).ifPresent(user -> {
@@ -43,11 +43,8 @@ public class UserService {
             throw new Exception400("이미 존재하는 이름입니다.");
         });
         User user = joinDTO.toEntity(); // UserRequest -> User로 형변환
-        User savedUserEntity = userRepository.save(user);
-        log.info("회원 가입 서비스 완료 - id : {}", savedUserEntity.getId());
 
-        return new UserResponse.JoinDTO(savedUserEntity = userRepository.save(user));
-
+        return  userRepository.save(user);
     } // end of join
 
 
@@ -57,7 +54,7 @@ public class UserService {
      * @param loginDTO (사용자가 요청한 로그인 정보)
      * @return User (조회된 정보 세션 저장용)
      */
-    public UserResponse.SessionDTO 로그인(UserRequest.LoginDTO loginDTO) {
+    public User 로그인(UserRequest.LoginDTO loginDTO) {
 
         log.info("로그인 서비스 시작");
 
@@ -67,10 +64,7 @@ public class UserService {
             log.warn("로그인 실패 - 사용자 이름 또는 사용자 비밀번호 잘못 입력");
             return new Exception400("사용자명 또는 비밀번호가 올바르지 않습니다.");
         });
-
-        log.info("로그인 성공 - 사용자명 : {}", loginDTO.getUsername());
-
-        return new UserResponse.SessionDTO(userEntity);
+        return userEntity;
 
     } // end of login
 
@@ -80,7 +74,7 @@ public class UserService {
      * @param id (User PK)
      * @return UserEntity
      */
-    public UserResponse.SessionDTO 회원정보수정화면(Integer id) {
+    public User 회원정보수정화면(Integer id) {
         log.info("사용자 정보 서비스 시작");
 
         User userEntity = userRepository.findById(id).orElseThrow(() -> {
@@ -88,7 +82,7 @@ public class UserService {
             return new Exception404("사용자 정보를 찾을 수 없습니다.");
         });
 
-        return new UserResponse.SessionDTO(userEntity);
+        return userEntity;
     } // end of findById
 
 
@@ -100,10 +94,9 @@ public class UserService {
      * @return User
      */
     @Transactional
-    public UserResponse.SessionDTO 회원정보수정(
+    public User 회원정보수정(
             Integer id,
-            UserRequest.UpdateDTO updateDTO,
-            HttpSession session
+            UserRequest.UpdateDTO updateDTO
     ) {
 
         log.info("회원 정보 수정 서비스 시작");
@@ -111,12 +104,8 @@ public class UserService {
             return new Exception404("회원 정보가 없습니다.");
         });
         userEntity.update(updateDTO);
-        log.info("회원 정보 수정 완료 - 사용자 ID : {}", userEntity.getId());
-        UserResponse.SessionDTO sessionDTO = new UserResponse.SessionDTO(userEntity);
 
-        //세션 동기화 처리
-        session.setAttribute("sessionUser",sessionDTO);
-        return sessionDTO;
+        return userEntity;
     } // end of updateById
 
 
